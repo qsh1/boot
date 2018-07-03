@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<style type="text/css">
+	.table{
+		text-align: center;
+	}
+	th{
+		text-align: center;
+	}
+	</style>
+</head>
+<body>
+	<table class="table table-hover">
+  	<th>序号</th>
+	<th>用户名</th>
+	<th>密码</th>
+	<th>操作</th>
+		<tbody class="Tbody">
+		
+		</tbody>
+	</table>
+		
+</body>
+</html>
+<script src="../js/jquery.js"></script>
+<script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+	var $Tbody = $('.Tbody');
+	$.post('boot.huoqu.php',function(json){
+		if (json.code == 200) {
+		var $data = json.data;
+		for(var i = 0; i<$data.length; i++){
+			var _tr = $('<tr></tr>');
+			for(var j = 0; j<$data[i].length; j++){
+				var _td = $('<td></td>');
+				_td.append($data[i][j]);
+				_tr.append(_td);
+			}
+			var _td = $('<td></td>');
+			var _buttom1 = $('<button type="button" class="btn btn-warning btnxg">修改</button>');
+			var _buttom2 = $('<button type="button" class="btn btn-danger btnsc">删除</button>');
+			_td.append(_buttom1);
+			_td.append('&nbsp;&nbsp;&nbsp;&nbsp;');
+			_td.append(_buttom2);
+			_tr.append(_td);
+			$Tbody.append(_tr);
+
+		}	
+			$Tbody.on('click','.btnsc',function(){
+				console.log($(".btnsc").closest());
+
+			})
+		}else{
+			alert(2);
+		}
+	},'json');
+	
+	
+</script>

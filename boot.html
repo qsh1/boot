@@ -13,8 +13,8 @@
 		text-align: center;
 		line-height: 50px;
 	}
-	.form-control{
-		width: 500px;
+	.form-control{ 
+		width: 300px;
 		height: 30px;
 	}
 	.btn{
@@ -23,26 +23,47 @@
 </head>
 <body>
 	<div class="conatiner">
-		<form>
-		  <div class="form-group">
-		    <input type="text" class="form-control" id="username" placeholder="请输入您的用户名">
-		  </div>
-
-		  <div class="form-group">
-		    <input type="password" class="form-control" id="password" placeholder="请输入您的密码">
-		  </div>
-
-		  <div class="checkbox">
-		      <input type="checkbox"> 同意用户协议
-		  </div>
-		<button type="button" class="btn btn-info">（一般信息）Info</button>
-		</form>
+<form>
+	  <div class="form-group">
+	    <input type="text" class="form-control" id="username" placeholder="用户名">
+	  </div>
+	  <div class="form-group">
+	    <input type="password" class="form-control" id="password" placeholder="密码">
+	  </div>
+	  <div class="checkbox">
+	    <label>
+	      <input type="checkbox"> 同意协议
+	    </label>
+	  </div>
+	   <button type="button" class="btn btn-primary btn-lg">（大按钮）Large button</button>
+</form>
 	</div>
-	
+
 </body>
 </html>
 <script src="../js/jquery.js"></script>
 <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-	
+	var $username = $('#username');
+	var $password = $('#password');
+	var $btn = $('.btn');
+	$btn.click(function(){
+		var p = {
+			username : $username.val(),
+			password : $password.val()
+		}
+		$.post('boot.php',p,aa,'json');
+	})
+
+	function aa(json){
+		if (json.code == 200) {
+			// $.post('boot.huoqu.php','json');
+			// console.log(json);
+			location.href = "boot_xuanran.html";
+			// location.href = "boot_shuju.php";
+			// console.log(json.data);
+		}else{
+			alert(json.msg);
+		}
+	}
 </script>
