@@ -11,9 +11,46 @@
 	th{
 		text-align: center;
 	}
+	h1{
+		text-align: center;
+		margin:30px 0;
+	}
 	</style>
 </head>
 <body>
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@mdo">添加用户</button>
+	
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title" id="exampleModalLabel">添加用户信息</h3>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+          <h5>请输入用户名</h5>
+            <input type="text" class="form-control" id="user">
+          </div>
+          <div class="form-group">
+          <h5>请输入密码</5>
+            <input type="password" class="form-control" id="pwd">
+          </div>
+        </form>
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-primary btn_affirm">完成添加</button>
+      </div> -->
+            <div class="modal-footer">
+        <button type="button" class="btn btn-default btn_affirm" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+	<h1>用户信息</h1>
 	<table class="table table-hover">
   	<th>序号</th>
 	<th>用户名</th>
@@ -29,35 +66,93 @@
 <script src="../js/jquery.js"></script>
 <script src="../bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-	var $Tbody = $('.Tbody');
-	$.post('boot.huoqu.php',function(json){
+
+	function fn(json){//渲染方法函数
+		$Tbody.html('');
 		if (json.code == 200) {
-		var $data = json.data;
-		for(var i = 0; i<$data.length; i++){
-			var _tr = $('<tr></tr>');
-			for(var j = 0; j<$data[i].length; j++){
+			var $data = json.data;
+			for(var i = 0; i<$data.length; i++){
+				var _tr = $('<tr></tr>');
+				for(var j = 0; j<$data[i].length; j++){
+					var _td = $('<td></td>');
+					_td.append($data[i][j]);
+					_tr.append(_td);
+				}
 				var _td = $('<td></td>');
-				_td.append($data[i][j]);
+				var _buttom1 = $('<button type="button" class="btn btn-warning btnxg">修改</button>');
+				var _buttom2 = $('<button type="button" class="btn btn-danger btnsc">删除</button>');
+				_td.append(_buttom1);
+				_td.append('&nbsp;&nbsp;&nbsp;&nbsp;');
+				_td.append(_buttom2);
 				_tr.append(_td);
-			}
-			var _td = $('<td></td>');
-			var _buttom1 = $('<button type="button" class="btn btn-warning btnxg">修改</button>');
-			var _buttom2 = $('<button type="button" class="btn btn-danger btnsc">删除</button>');
-			_td.append(_buttom1);
-			_td.append('&nbsp;&nbsp;&nbsp;&nbsp;');
-			_td.append(_buttom2);
-			_tr.append(_td);
-			$Tbody.append(_tr);
-
-		}	
-			$Tbody.on('click','.btnsc',function(){
-				console.log($(".btnsc").closest());
-
-			})
-		}else{
-			alert(2);
+				$Tbody.append(_tr);
+			}	
 		}
+	}
+
+	var $Tbody = $('.Tbody');//用户输入正确执行的方法
+	$.post('boot.huoqu.php',function(json){
+		fn(json);
 	},'json');
 	
-	
+	$Tbody.on('click','.btnsc',function(json){//删除按钮
+		var id = $(this).closest('tr').find('td').eq(0).html();
+		var p = {
+			id : id
+		}
+		$.post('boot_delete.php',p,function(json){
+			if (json.code==200) {
+				$.post('boot.huoqu.php',function(json){
+					fn(json);
+				},'json');
+			}
+		},'json');
+	});
+
+	$Tbody.on('click','.btnxg',function(){	
+		$(this).attr("class","btn btn-success").html('确认');
+		var tdAll = $(this).closest('tr').find('td');
+		for(var i = 1; i < tdAll.length -1; i++){
+			var val = tdAll.eq(i).html();
+			tdAll.eq(i).html(`<input type="text" value=${val}>`);
+		}//点修改按钮改变成文本框
+	})
+
+	$Tbody.on('click','.btn-success',function(){	
+		$(this).attr("class","btn btn-warning btnxg").html('修改');
+		var tdAll = $(this).closest('tr').find('td');
+		var $id = tdAll.eq(0).html();
+		var $username = tdAll.eq(1).find('input').val();
+		var $password = tdAll.eq(2).find('input').val();
+			var p = {
+				id : $id,
+				username : $username,
+				password : $password
+			}
+		$.post('boot_alter.php',p,function(json){
+			if (json.code == 200) {
+				$.post('boot.huoqu.php',function(json){
+					for(var i = 1; i < tdAll.length -1; i++){
+						var val = tdAll.eq(i).find('input').val();
+						tdAll.eq(i).html(val);
+					}
+				},'json');
+			}
+		},'json')//修改内容 
+		
+	})
+	var $btn_affirm = $('.btn_affirm');
+	var $user = $('#user');
+	var $pwd = $('#pwd');
+	$btn_affirm.click(function(){
+		var p = {
+			user : $user.val(),
+			pwd : $pwd.val()
+		}
+		$.post('boot_add.php',p,function(json){
+				$.post('boot.huoqu.php',function(json){
+					fn(json);
+				},'json');
+		},'json')
+	})
 </script>
